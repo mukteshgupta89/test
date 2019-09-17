@@ -100,6 +100,7 @@ with open('80K_users_sms.json', encoding="utf-8-sig") as json_file: #input file 
         
 
 ######################Testing JSON RUN#######################
+'''
 with open('muktesh_sms.json', encoding="utf-8-sig") as json_file: #input file Json and appending in 3 array header sms time
     data = json.load(json_file)
     for p in data['data']:
@@ -107,15 +108,15 @@ with open('muktesh_sms.json', encoding="utf-8-sig") as json_file: #input file Js
 		#p[sms]=p[sms].lower()
         sms.append('hello '+p['sms'].lower())
         time.append((datetime.datetime.fromtimestamp(float(p['sms_time']) / 1e3)).strftime("%H:%M:%S.%f - %b %d %Y"))
-
+'''
 
 ######################When input in array######################
-'''
+
 txtfile = open("two_debit.txt", 'r', encoding="utf-8-sig")
 for line in txtfile.readlines():
     sms.append(line.rstrip().lower())
 txtfile.close()
-'''
+
 
 
  
@@ -125,20 +126,22 @@ for i in range(len(sms)):
 	flag = 0
 	print(sms[i])
 	print("flag" + str(flag))
-	if ("debit" in sms[i] or "debited" in sms[i] or "use" in sms[i] or "used" in sms[i] or "spent" in sms[i]or "internet banking" in sms[i])and "card" not in sms[i]:
+	if ("debit" in sms[i] or "debited" in sms[i] or "use" in sms[i] or "used" in sms[i] or "spent" in sms[i]or "internet banking" in sms[i])and "card" not in sms[i] and "credited" not in sms[i]:
 		print("###inside debit or debited or use or used or spent or internet banking&&&")
-		acc = re.findall(r"\bXX+[0-9]{3,}|\bX+[0-9]{3,}|\bxx+[0-9]{2,}|a/c\b..+[0-9]{2,}|A/c ending+ [0-9]{3,}|a/cx+[0-9]{2,}$",sms[i])
+		acc = re.findall(r"\bXX+[0-9]{3,}|\bX+[0-9]{3,}|\bxx+[0-9]{2,}|a/c +[0-9]{2,}|A/c ending +[0-9]{3,}|a/cx+[0-9]{2,}$",sms[i])
 		if acc:
+			print(acc)
 			acc = re.findall('[0-9]*', acc[0]) #Extracting only numbers from account found in  acc also extracting only acc[0]
 			
 			#for j in range(len(acc)):
 				#if(acc!=''):
 			print("acc = "+str(acc))       # we found account no. 
+			 
 			actual_mapping_arr.append(acc)  					
 			if(acc not in unique_arr):      #for new account
 				unique_arr.append(acc)
 				
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
@@ -146,8 +149,8 @@ for i in range(len(sms)):
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -161,15 +164,15 @@ for i in range(len(sms)):
 					flag = 1
 					#continue
 			else:			# already exsisting account
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -193,8 +196,8 @@ for i in range(len(sms)):
 			file1.write(sms[i]+"\, O\n")
 			excel_count_sheet3=excel_count_sheet3+1
 			sheet3.write(excel_count_sheet3,0,excel_count_sheet3)
-			sheet3.write(excel_count_sheet3,1,time[i])
-			sheet3.write(excel_count_sheet3,2,header[i])
+			#sheet3.write(excel_count_sheet3,1,time[i])
+			#sheet3.write(excel_count_sheet3,2,header[i])
 			sheet3.write(excel_count_sheet3,3,"Extra frm debit or debited or use or used or spent or internet banking" )
 			#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 			sheet3.write(excel_count_sheet3,6,sms[i])
@@ -222,15 +225,15 @@ for i in range(len(sms)):
 			if(acc not in unique_arr):
 				unique_arr.append(acc)
 				
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -242,15 +245,15 @@ for i in range(len(sms)):
 					flag = 4
 					#continue
 			else:
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -266,8 +269,8 @@ for i in range(len(sms)):
 			file1.write(sms[i]+"\, O\n")
 			excel_count_sheet3=excel_count_sheet3+1
 			sheet3.write(excel_count_sheet3,0,excel_count_sheet3)
-			sheet3.write(excel_count_sheet3,1,time[i])
-			sheet3.write(excel_count_sheet3,2,header[i])
+			#sheet3.write(excel_count_sheet3,1,time[i])
+			#sheet3.write(excel_count_sheet3,2,header[i])
 			sheet3.write(excel_count_sheet3,3,"Extra frm w/d@ or Withdrawn or ATM or used or spent" )
 			#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 			sheet3.write(excel_count_sheet3,6,sms[i])
@@ -279,7 +282,7 @@ for i in range(len(sms)):
 			flag = 6
 			#continue
 	
-	elif (("txn" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] or "Txn" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i]))and "card" not in sms[i] :
+	elif (("txn" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i]  or "Txn" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i]))and "card" not in sms[i] :
 	#elif (any('txn of rs' in s for s in singles)):
 		print("##########################inside internet banking Kw txn,Txn&&&&&&&&&&&&&&&&&&&&&&")
 		print(sms[i])
@@ -292,15 +295,15 @@ for i in range(len(sms)):
 			if(acc not in unique_arr):
 				unique_arr.append(acc)
 				
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -312,15 +315,15 @@ for i in range(len(sms)):
 					flag = 7
 					#continue
 			else:
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -337,8 +340,8 @@ for i in range(len(sms)):
 			file1.write(sms[i]+"\, O\n")
 			excel_count_sheet3=excel_count_sheet3+1
 			sheet3.write(excel_count_sheet3,0,excel_count_sheet3)
-			sheet3.write(excel_count_sheet3,1,time[i])
-			sheet3.write(excel_count_sheet3,2,header[i])
+			#sheet3.write(excel_count_sheet3,1,time[i])
+			#sheet3.write(excel_count_sheet3,2,header[i])
 			sheet3.write(excel_count_sheet3,3,"Extra frm internet banking Kw txn,Txn" )
 			#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 			sheet3.write(excel_count_sheet3,6,sms[i])
@@ -351,7 +354,7 @@ for i in range(len(sms)):
 			#continue
 	
 	
-	elif "sent" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] :
+	elif "sent" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] and "stmt for credit card" not in sms[i] :
 	
 		print("##########################inside sent &&&&&&&&&&&&&&&&&&&&&&")
 		print(sms[i])
@@ -365,15 +368,15 @@ for i in range(len(sms)):
 			if(acc not in unique_arr):
 				unique_arr.append(acc)
 				
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -392,15 +395,15 @@ for i in range(len(sms)):
 					flag = 10
 					#continue
 			else:
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -417,8 +420,8 @@ for i in range(len(sms)):
 			file1.write(sms[i]+"\, O\n")
 			excel_count_sheet3=excel_count_sheet3+1
 			sheet3.write(excel_count_sheet3,0,excel_count_sheet3)
-			sheet3.write(excel_count_sheet3,1,time[i])
-			sheet3.write(excel_count_sheet3,2,header[i])
+			#sheet3.write(excel_count_sheet3,1,time[i])
+			#sheet3.write(excel_count_sheet3,2,header[i])
 			sheet3.write(excel_count_sheet3,3,"Extra frm sent" )
 			#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 			sheet3.write(excel_count_sheet3,6,sms[i])
@@ -430,7 +433,7 @@ for i in range(len(sms)):
 			flag = 12
 			#continue
 	
-	elif "card" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] or "CARD" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i]  :
+	elif "card" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] and "stmt for credit card" not in sms[i] and "received payment of" not in sms[i] and "limit" not in sms[i] and "due" not in sms[i] and "has been credited" not in sms[i] or "CARD" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] and "stmt for credit card" not in sms[i] and "received payment of" not in sms[i] and "limit" not in sms[i] and "due" not in sms[i] and "has been credited" not in sms[i] :
 	
 		print("##########################Card payments &&&&&&&&&&&&&&&&&&&&&&")
 		print(sms[i])
@@ -445,15 +448,15 @@ for i in range(len(sms)):
 			if(acc not in unique_arr):
 				unique_arr.append(acc)
 				
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -473,15 +476,15 @@ for i in range(len(sms)):
 					
 					#continue
 			else:
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for debit ", int(float(price_str(matchObj.group(8)))))
 					debit_msg_inside=debit_msg_inside+1
 					file1.write(sms[i]+"\, D\n")		#1 for debit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,4,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -505,8 +508,8 @@ for i in range(len(sms)):
 			file1.write(sms[i]+"\, O\n")
 			excel_count_sheet3=excel_count_sheet3+1
 			sheet3.write(excel_count_sheet3,0,excel_count_sheet3)
-			sheet3.write(excel_count_sheet3,1,time[i])
-			sheet3.write(excel_count_sheet3,2,header[i])
+			#sheet3.write(excel_count_sheet3,1,time[i])
+			#sheet3.write(excel_count_sheet3,2,header[i])
 			sheet3.write(excel_count_sheet3,3,"Extra frm card payment" )
 			#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 			sheet3.write(excel_count_sheet3,6,sms[i])
@@ -520,11 +523,12 @@ for i in range(len(sms)):
 	
 	
 	
-	elif "credit" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] or "deposited" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] :
+	elif "credited" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] and "stmt for credit card" not in sms[i] and "limit" not in sms[i] or "credit" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] and "stmt for credit card" not in sms[i] and "limit" not in sms[i] and "due" not in sms[i] or "deposited" in sms[i] and "declined " not in sms[i] and "otp" not in sms[i] and "stmt for credit card" not in sms[i] and "limit" not in sms[i] and "due" not in sms[i] :
 	#elif (any('txn of rs' in s for s in singles)):
 		print("##########################inside Credit and deposited &&&&&&&&&&&&&&&&&&&&&&")
-		acc = re.findall(r"\bXX+[0-9]{3,}|\bX+[0-9]{3,}|\bxx+[0-9]{2,}|a/c\b..+[0-9]{2,}|A/c ending+ [0-9]{3,}|a/cx+[0-9]{2,}$",sms[i])
+		acc = re.findall(r"\bXX+[0-9]{3,}|\bX+[0-9]{3,}|\bxx+[0-9]{2,}|a/c. +[0-9]{2,}|A/c ending +[0-9]{3,}|a/cx+[0-9]{2,}$",sms[i])
 		if acc:
+			print(acc)
 			acc = re.findall('[0-9]*', acc[0])
 	
 			print("acc = "+str(acc))       # we found account no in sample space step 1
@@ -532,15 +536,15 @@ for i in range(len(sms)):
 			if(acc not in unique_arr):
 				unique_arr.append(acc)
 				
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for credit ", int(float(price_str(matchObj.group(8)))))
 					credit_msg_inside=credit_msg_inside+1
 					file1.write(sms[i]+"\, C\n")		#2 for credit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,5,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -552,15 +556,15 @@ for i in range(len(sms)):
 					flag = 16
 					#continue
 			else:
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for credit ", int(float(price_str(matchObj.group(8)))))
 					credit_msg_inside=credit_msg_inside+1
 					file1.write(sms[i]+"\, C\n")		#1 for credit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,5,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -577,8 +581,8 @@ for i in range(len(sms)):
 			file1.write(sms[i]+"\, O\n")
 			excel_count_sheet3=excel_count_sheet3+1
 			sheet3.write(excel_count_sheet3,0,excel_count_sheet3)
-			sheet3.write(excel_count_sheet3,1,time[i])
-			sheet3.write(excel_count_sheet3,2,header[i])
+			#sheet3.write(excel_count_sheet3,1,time[i])
+			#sheet3.write(excel_count_sheet3,2,header[i])
 			sheet3.write(excel_count_sheet3,3,"Extra frm credit" )
 			#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 			sheet3.write(excel_count_sheet3,6,sms[i])
@@ -601,15 +605,15 @@ for i in range(len(sms)):
 			if(acc not in unique_arr):
 				unique_arr.append(acc)
 				
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for credit ", int(float(price_str(matchObj.group(8)))))
 					credit_msg_inside=credit_msg_inside+1
 					file1.write(sms[i]+"\, C\n")		#2 for credit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,5,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -621,15 +625,15 @@ for i in range(len(sms)):
 					flag = 19
 					#continue
 			else:
-				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
+				matchObj = re.match( r'(.*?)?(\s*)(inr|INR|Rs|rs|RS|inr.|INR.|Rs.|rs.|RS.|(amount(\s*)of)(\s*))(\s*)( *[0-9,]+.?(\s*)[0-9]*)(\s*)(.*)?',sms[i], re.M|re.I) # regex to find digits after inr|inr |rs.|rs. in the string
 				if matchObj:         
 					print ("matchObj.group(1) : for credit ", int(float(price_str(matchObj.group(8)))))
 					credit_msg_inside=credit_msg_inside+1
 					file1.write(sms[i]+"\, C\n")		#1 for credit
 					excel_count=excel_count+1
 					sheet1.write(excel_count,0,excel_count)
-					sheet1.write(excel_count,1,time[i])
-					sheet1.write(excel_count,2,header[i])
+					#sheet1.write(excel_count,1,time[i])
+					#sheet1.write(excel_count,2,header[i])
 					sheet1.write(excel_count,3,acc)
 					sheet1.write(excel_count,5,int(float(price_str(matchObj.group(8)))))
 					sheet1.write(excel_count,6,sms[i])
@@ -645,8 +649,8 @@ for i in range(len(sms)):
 			file1.write(sms[i]+"\, O\n")
 			excel_count_sheet3=excel_count_sheet3+1
 			sheet3.write(excel_count_sheet3,0,excel_count_sheet3)
-			sheet3.write(excel_count_sheet3,1,time[i])
-			sheet3.write(excel_count_sheet3,2,header[i])
+			#sheet3.write(excel_count_sheet3,1,time[i])
+			#sheet3.write(excel_count_sheet3,2,header[i])
 			sheet3.write(excel_count_sheet3,3,"Extra frm chq" )
 			#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 			sheet3.write(excel_count_sheet3,6,sms[i])
@@ -670,8 +674,8 @@ for i in range(len(sms)):
 		file1.write(sms[i]+"\, O\n")
 		excel_count_sheet2=excel_count_sheet2+1
 		sheet2.write(excel_count_sheet2,0,excel_count_sheet2)
-		sheet2.write(excel_count_sheet2,1,time[i])
-		sheet2.write(excel_count_sheet2,2,header[i])
+		#sheet2.write(excel_count_sheet2,1,time[i])
+		#sheet2.write(excel_count_sheet2,2,header[i])
 		#sheet2.write(excel_count_sheet2,3,acc)
 		#sheet2.write(excel_count_sheet2,5,int(float(price_str(matchObj.group(8)))))
 		sheet2.write(excel_count_sheet2,6,sms[i])
